@@ -1,54 +1,66 @@
-// Import necessary dependencies
 import React, { useState, useEffect } from "react";
-import { Card, Spin, Alert } from "antd";
+import { Card, Spin, Alert, Input, Button } from "antd";
 import axios from "axios";
 
-// Define the component
 const PerDayFineComponent = () => {
-  // State to store the fetched data
   const [perdayfine, setPerDayFine] = useState(0);
-  // State to handle loading state
   const [loading, setLoading] = useState(true);
-  // State to handle error state
   const [error, setError] = useState(null);
 
-  // Effect to make the API request on component mount
   useEffect(() => {
     const fetchData = async () => {
+      console.log("fetch");
       try {
-        // Make API request here, replace 'your-api-endpoint' with your actual API endpoint
         const response = await axios.get("http://localhost:5000/fine/get");
-        // Extract the 'perdayfine' value from the response
         const { perdayfine } = response.data;
         setPerDayFine(perdayfine);
       } catch (error) {
         setError("Error fetching data");
       } finally {
-        // Set loading to false regardless of success or failure
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []); // The empty dependency array ensures the effect runs only once on mount
+  }, []);
 
-  // Render loading state
+  const handleInputChange = (e) => {
+    setPerDayFine(e.target.value);
+  };
+
+  const handleUpdateClick = async () => {
+    console.log("update");
+    try {
+      // Make a PUT request to update the value in the database
+      await axios.put("http://localhost:5000/fine/update", { perdayfine });
+    } catch (error) {
+      setError("Error updating data");
+    }
+  };
+
   if (loading) {
     return <Spin tip="Loading..." />;
   }
 
-  // Render error state
   if (error) {
     return <Alert message={error} type="error" />;
   }
 
-  // Render the component with the fetched data
   return (
     <Card title="Per Day Fine">
+      <Input
+        type="number"
+        value={perdayfine}
+        onChange={handleInputChange}
+        style={{ marginBottom: "10px" }}
+      />
+      <Button type="primary" onClick={handleUpdateClick}>
+        Update Value
+      </Button>
       <p>Value: {perdayfine}</p>
     </Card>
   );
 };
 
-// Export the component
 export default PerDayFineComponent;
+
