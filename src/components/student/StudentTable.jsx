@@ -27,7 +27,9 @@ const StudentTable = () => {
 
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editedStudent, setEditedStudent] = useState(null);
-  const [updatedStudentData, setUpdatedStudentData] = useState({}); // State to hold edited student data
+  const [updatedStudentData, setUpdatedStudentData] = useState({});
+  const [searchTerm, setSearchTerm] = useState('');
+  // State to hold edited student data
   const navigate = useNavigate();
 
   const handleEdit = (record) => {
@@ -143,10 +145,29 @@ const cancelDelete=()=>{
     },
   ];
 
+
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+  };
+
+  const filteredStudents = students
+  ? students.filter(
+      (student) =>
+        (student.name && student.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (student.regNo && student.regNo.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
+  : [];
+
+
   return (
     <div>
+         <Input.Search
+        placeholder="Search by Name or Registration Number"
+        onSearch={handleSearch}
+        style={{ marginBottom: 16 }}
+      />
       <Table
-        dataSource={students}
+        dataSource={filteredStudents}
         columns={columns}
         loading={loading}
         rowKey="regNo"

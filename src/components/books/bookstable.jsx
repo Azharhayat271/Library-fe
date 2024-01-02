@@ -9,6 +9,7 @@ const BookTable = () => {
   const [loading, setLoading] = useState(true);
   const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
   const [selectedBook, setSelectedBook] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     axios
@@ -27,10 +28,10 @@ const BookTable = () => {
     setDeleteConfirmationVisible(true);
     setSelectedBook(record);
   };
-  const cancelDelete=()=>{
-    setDeleteConfirmationVisible(false);
-  }
 
+  const cancelDelete = () => {
+    setDeleteConfirmationVisible(false);
+  };
 
   const handleDelete = () => {
     axios
@@ -82,19 +83,32 @@ const BookTable = () => {
     },
   ];
 
+
   const handleEdit = (record) => {
     // Implement your edit logic here
     console.log('Edit book:', record);
   };
 
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+  };
+
+  const filteredBooks = books.filter(
+    (book) =>
+      book.ISBN.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      book.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <>
-      <Table
-        dataSource={books}
-        columns={columns}
-        loading={loading}
-        rowKey="isbn"
+      <Input.Search
+        placeholder="Search by ISBN or Book Title"
+        onSearch={handleSearch}
+        style={{ marginBottom: 16 }}
       />
+
+      <Table dataSource={filteredBooks} columns={columns} loading={loading} rowKey="isbn" />
+
       <Modal
         title="Confirm Delete"
         visible={deleteConfirmationVisible}
