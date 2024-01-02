@@ -15,7 +15,7 @@ const StudentIndex = () => {
         const response = await fetch("http://localhost:5000/students/getall");
 
         const data = await response.json();
-        setStudentsData(data);
+        setStudentsData(data || "No data found");
       } catch (error) {
         console.error("Error fetching students data:", error);
       } finally {

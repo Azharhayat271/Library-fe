@@ -55,7 +55,7 @@ const App = () => {
             <Link to="/issuebookrecords">Issue a Book</Link>
           </Menu.Item>
           <Menu.Item key="return" icon={<RollbackOutlined />} onClick={closeDrawer}>
-            <Link to="/return">Return Book</Link>
+            <Link to="/returnbook">Return Book</Link>
           </Menu.Item>
           <Menu.Item key="fine" icon={<DollarOutlined />} onClick={closeDrawer}>
             <Link to="/fine">Fine Management</Link>

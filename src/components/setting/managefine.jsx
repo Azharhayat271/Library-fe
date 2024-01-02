@@ -1,54 +1,95 @@
-// Import necessary dependencies
-import React, { useState, useEffect } from "react";
-import { Card, Spin, Alert } from "antd";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import { Card, Input, Button, Spin, Typography , message} from 'antd';
 
-// Define the component
-const PerDayFineComponent = () => {
-  // State to store the fetched data
-  const [perdayfine, setPerDayFine] = useState(0);
-  // State to handle loading state
-  const [loading, setLoading] = useState(true);
-  // State to handle error state
-  const [error, setError] = useState(null);
+const { Text } = Typography;
 
-  // Effect to make the API request on component mount
+const FineCard = () => {
+  const [finePerDay, setFinePerDay] = useState(null);
+  const [fineID, setFineID] = useState('');
+  const [newFineValue, setNewFineValue] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Make API request here, replace 'your-api-endpoint' with your actual API endpoint
-        const response = await axios.get("http://localhost:5000/fine/get");
-        // Extract the 'perdayfine' value from the response
-        const { perdayfine } = response.data;
-        setPerDayFine(perdayfine);
+        const response = await fetch('http://localhost:5000/fine/get');
+        const data = await response.json();
+        setFinePerDay(data.finePerDay);
+        setFineID(data.id);
       } catch (error) {
-        setError("Error fetching data");
-      } finally {
-        // Set loading to false regardless of success or failure
-        setLoading(false);
+        console.error('Error fetching data:', error);
       }
     };
 
     fetchData();
-  }, []); // The empty dependency array ensures the effect runs only once on mount
+  }, []);
 
-  // Render loading state
-  if (loading) {
-    return <Spin tip="Loading..." />;
-  }
+  const handleUpdateFine = async () => {
+    try {
+      setIsLoading(true);
 
-  // Render error state
-  if (error) {
-    return <Alert message={error} type="error" />;
-  }
+      // Make API request to update finePerDay
+      const response = await fetch('http://localhost:5000/fine/update', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ finePerDay: newFineValue, id: fineID }),
+      });
 
-  // Render the component with the fetched data
+      // Assume the API returns the updated data
+      const data = await response.json();
+      setFinePerDay(newFineValue);
+      message.success('Fine Updated Successfully');
+
+      // Reset the input and loading state
+      setNewFineValue('');
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error updating finePerDay:', error);
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <Card title="Per Day Fine">
-      <p>Value: {perdayfine}</p>
+    <Card title="Fine Per Day">
+      {finePerDay !== null ? (
+        <>
+          <p>
+            <strong>
+              Value: <span style={{ fontSize: '1.5em' }}>{finePerDay}</span>
+            </strong>
+          </p>
+          <Input
+            placeholder="Update Fine Value"
+            value={newFineValue}
+            onChange={(e) => setNewFineValue(e.target.value)}
+          />
+          <div className='mt-5'>
+          <Button
+            type="primary"
+            onClick={handleUpdateFine}
+            loading={isLoading}
+            danger
+          >
+            {isLoading ? 'Updating...' : 'Update'}
+          </Button>
+          </div>
+
+          <div style={{ marginTop: '20px' }}>
+            <Text strong>Instructions:</Text>
+            <p>
+              The Fine Per Day value represents the amount charged for each day
+              a book is overdue. This value is used to calculate the fine when
+              a student submits a book return after the due date.
+            </p>
+          </div>
+        </>
+      ) : (
+        <Spin tip="Loading..." />
+      )}
     </Card>
   );
 };
 
-// Export the component
-export default PerDayFineComponent;
+export default FineCard;
