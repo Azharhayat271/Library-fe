@@ -20,6 +20,8 @@ import EditStudentForm from './components/student/editstudent';
 import EditBookForm from './components/books/editbooks';
 import Managefine from "./components/setting/managefine";
 import Issuebookrecords from "./components/issue_book/issuebooktable";
+import ReturnBokk from "./components/returnbook/index";
+import ReturnBook from "./components/returnbook/return";
 
 function App() {
   return (
@@ -174,6 +176,25 @@ function App() {
             </RootLayout>
 
           } />
+            <Route
+          path="/returnbook"
+          element={
+            <RootLayout>
+              <Protectedroutes Component={ReturnBokk} />
+            </RootLayout>
+          }
+        />
+          <Route
+          path="/bookissues/return/:regNo"
+
+          element={
+
+            <RootLayout>
+              <Protectedroutes Component={ReturnBook} />
+            </RootLayout>
+
+          } />
+
 
 
 
