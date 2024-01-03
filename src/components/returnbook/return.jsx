@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import { Result, Space, Input, Button, Row, Col } from "antd";
 import { RetweetOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 
 const BookReturnDetails = () => {
   const { regNo } = useParams();
@@ -11,6 +13,7 @@ const BookReturnDetails = () => {
   const [additionalFine, setAdditionalFine] = useState(0);
   const [additionalFineInput, setAdditionalFineInput] = useState(0); // Define additionalFineInput
   const [reasonInput, setReasonInput] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -22,6 +25,20 @@ const BookReturnDetails = () => {
         console.error(error);
       });
   }, []);
+
+  // Function to calculate the total fine
+  const totalFine = () => {
+    if (bookIssue && bookIssue.issueDate && bookIssue.returnDate) {
+      const date1 = new Date(bookIssue.issueDate);
+      const date2 = new Date(bookIssue.returnDate);
+      const diffTime = Math.abs(date2 - date1);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const totalFine = diffDays * fine;
+      return totalFine;
+    } else {
+      return 0; // Handle the case where bookIssue or its properties are null
+    }
+  };
 
   useEffect(() => {
     // Fetch book issue data based on the regNo from an API or any other data source
@@ -41,32 +58,33 @@ const BookReturnDetails = () => {
 
     fetchBookIssueData();
   }, [regNo]);
-  const totalFineToBePaid =
-    new Date() > new Date(bookIssue?.returnDate)
-      ? fine *
-          Math.max(
-            0,
-            Math.ceil(
-              (new Date() -
-                new Date(
-                  new Date(bookIssue.returnDate).getTime() + 24 * 60 * 60 * 1000
-                )) /
-                (1000 * 3600 * 24)
-            )
-          ) +
-        additionalFineInput // Use additionalFineInput here instead of additionalFine
-      : additionalFineInput;
+  const totalFineToBePaid = Number(additionalFineInput) + totalFine(); // Use additionalFineInput here instead of additionalFine
 
   const handleReturnBook = async () => {
+    const subfine = totalFine();
     try {
-      const response = await axios.post("http://localhost:5000/return-book", {
-        regNo: bookIssue.regNo,
-        additionalFine,
-        reason: bookIssue.reason,
-        // Include other necessary data
-      });
+      const response = await axios.post(
+        "http://localhost:5000/return/return-book",
+        {
+          regNo: bookIssue.regNo,
+          name: bookIssue.name,
+          ISBN: bookIssue.ISBN,
+          title: bookIssue.title,
+          issueDate: bookIssue.issueDate,
+          returnDate: bookIssue.returnDate,
+          date: new Date(),
+          fine: subfine,
+          totalFine: totalFineToBePaid,
+          additionalFine: additionalFineInput,
+          reason: reasonInput,
+
+          // Include other necessary data
+        }
+      );
 
       console.log(response.data);
+      navigate("/returnbook");
+
 
       // You may want to perform additional actions after the book is returned successfully
     } catch (error) {
@@ -123,26 +141,7 @@ const BookReturnDetails = () => {
             </Col>
             <Col span={12}>
               <p>
-                Total Fine:{" "}
-                <Input
-                  value={
-                    new Date() > new Date(bookIssue.returnDate)
-                      ? fine *
-                        Math.max(
-                          0,
-                          Math.ceil(
-                            (new Date() -
-                              new Date(
-                                new Date(bookIssue.returnDate).getTime() +
-                                  24 * 60 * 60 * 1000
-                              )) /
-                              (1000 * 3600 * 24)
-                          )
-                        )
-                      : 0
-                  }
-                  disabled
-                />
+                Total Fine: <Input value={totalFine()} disabled />
               </p>
             </Col>
           </Row>
