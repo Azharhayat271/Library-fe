@@ -22,6 +22,8 @@ import Managefine from "./components/setting/managefine";
 import Issuebookrecords from "./components/issue_book/issuebooktable";
 import ReturnBokk from "./components/returnbook/index";
 import ReturnBook from "./components/returnbook/return";
+import FineManagement from "./components/returnbook/finetable";
+import ReturnInventory from "./components/inventory/index";
 
 function App() {
   return (
@@ -191,6 +193,26 @@ function App() {
 
             <RootLayout>
               <Protectedroutes Component={ReturnBook} />
+            </RootLayout>
+
+          } />
+          <Route
+          path="/finemanagement"
+
+          element={
+
+            <RootLayout>
+              <Protectedroutes Component={FineManagement} />
+            </RootLayout>
+
+          } />
+          <Route
+          path="/returninventory"
+
+          element={
+
+            <RootLayout>
+              <Protectedroutes Component={ReturnInventory} />
             </RootLayout>
 
           } />

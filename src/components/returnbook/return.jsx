@@ -62,6 +62,14 @@ const BookReturnDetails = () => {
 
   const handleReturnBook = async () => {
     const subfine = totalFine();
+    let status="pending";
+    // if the total fine is zero then set the status to paid else set it to pending
+    if (totalFineToBePaid === 0) {
+      status = "true";
+    } else {  
+      status = "false";
+    }
+
     try {
       const response = await axios.post(
         "http://localhost:5000/return/return-book",
@@ -77,6 +85,7 @@ const BookReturnDetails = () => {
           totalFine: totalFineToBePaid,
           additionalFine: additionalFineInput,
           reason: reasonInput,
+          status: status,
 
           // Include other necessary data
         }

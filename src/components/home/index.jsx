@@ -61,7 +61,7 @@ const App = () => {
             <Link to="/finemanagement">Fine Management</Link>
           </Menu.Item>
           <Menu.Item key="inventory" icon={<DatabaseOutlined />} onClick={closeDrawer}>
-            <Link to="/inventory">Inventory Management</Link>
+            <Link to="/returninventory">Inventory Management</Link>
           </Menu.Item>
           <Menu.Item key="Logout" icon={<LoginOutlined  />} onClick={handleLogout}>
             Logout

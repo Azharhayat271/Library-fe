@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Space, Spin, Alert, Button } from "antd";
+import { Table, Space, Spin, Alert } from "antd";
 import axios from "axios";
 
 const BookReturnHistory = () => {
@@ -10,7 +10,7 @@ const BookReturnHistory = () => {
   useEffect(() => {
     const fetchReturnHistory = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/return/getall");
+        const response = await axios.get("http://localhost:5000/return/getallrecords");
         setReturnHistory(response.data);
         setLoading(false);
       } catch (error) {
@@ -22,21 +22,6 @@ const BookReturnHistory = () => {
 
     fetchReturnHistory();
   }, []);
-
-  const handlePayNow = async (id) => {
-    try {
-      // Make the API request to update the payment status and reset fine-related fields
-      await axios.post("http://localhost:5000/return/paynow", { id });
-      debugger;
-      console.log(`Payment for record with id ${id} completed.`);
-
-      // Optionally, you can fetch the updated return history data after payment is completed
-      // and update the component state if needed.
-    } catch (error) {
-      console.error("Error updating payment status:", error);
-      // Handle errors as needed
-    }
-  };
 
   const columns = [
     {
@@ -75,18 +60,11 @@ const BookReturnHistory = () => {
       key: "totalFine",
     },
     {
-      title: "Action",
-      key: "action",
-      render: (record) => (
-        <Space size="middle">
-          <Button
-            type="primary"
-            onClick={() => handlePayNow(record._id)}
-            danger
-          >
-            Pay Now
-          </Button>
-        </Space>
+      title: "Payment Status",
+      dataIndex: "isPaid",
+      key: "isPaid",
+      render: (isPaid) => (
+        <span>{isPaid ? "Pending" : "paid"}</span>
       ),
     },
   ];
