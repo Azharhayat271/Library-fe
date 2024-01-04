@@ -61,6 +61,7 @@ const FineChart = () => {
           series={chartSeries}
           type="bar"
           height={350}
+          width={500}
         />
       ) : (
         'Loading...'

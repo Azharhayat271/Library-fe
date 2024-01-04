@@ -10,7 +10,6 @@ const DisplayRegNoFromURL = () => {
   const regNo = pathParts[pathParts.length - 1];
   const navigation = useNavigate();
 
-
   const [editable, setEditable] = useState(false);
 
   const [studentData, setStudentData] = useState({
@@ -58,42 +57,61 @@ const DisplayRegNoFromURL = () => {
   };
 
   return (
-    <div>
-      <Form>
-        <Form.Item label="Name">
-          <Input value={studentData.name} disabled />
-        </Form.Item>
-        <Form.Item label="Registration Number">
-          <Input value={studentData.regNo} disabled />
-        </Form.Item>
-        <Form.Item label="ISBN">
-          <Input value={studentData.ISBN} disabled />
-        </Form.Item>
-        <Form.Item label="Title">
-          <Input value={studentData.title} disabled />
-        </Form.Item>
-        <Form.Item label="Issue Date">
-          <Input value={studentData.issueDate} disabled />
-        </Form.Item>
-        <Form.Item label="Return Date">
-          <Input
-            value={studentData.returnDate}
-            onChange={(e) => setStudentData({ ...studentData, returnDate: e.target.value })}
+    <div className="flex flex-wrap mt-3">
+      {/* heading */}
+      <div className="w-full">
+        <h1 className="text-2xl font-bold">Edit Book Issue Record</h1>
+      </div>
+      <div className="w-full sm:w-1/2 pr-4 mt-3">
+        <Form>
+          {/* First Column */}
+          <Form.Item>
+            <Input value={studentData.name} disabled />
+          </Form.Item>
+          <Form.Item>
+            <Input value={studentData.regNo} disabled />
+          </Form.Item>
+          <Form.Item>
+            <Input value={studentData.ISBN} disabled />
+          </Form.Item>
+        </Form>
+      </div>
+
+      <div className="w-full sm:w-1/2 pl-4 mt-3">
+        <Form>
+          {/* Second Column */}
+          <Form.Item>
+            <Input value={studentData.title} disabled />
+          </Form.Item>
+          <Form.Item>
+            <Input value={studentData.issueDate} disabled />
+          </Form.Item>
+          <Form.Item>
+            <Input
+              value={studentData.returnDate}
+              onChange={(e) =>
+                setStudentData({ ...studentData, returnDate: e.target.value })
+              }
+              disabled={!editable}
+            />
+          </Form.Item>
+        </Form>
+
+        {/* Buttons */}
+        <div className=" mt-4">
+          <Button
+            type="primary"
+            onClick={handleUpdateRecord}
+            danger
             disabled={!editable}
-          />
-        </Form.Item>
-      </Form>
-      <Button
-        type="primary"
-        onClick={handleUpdateRecord}
-        danger
-        disabled={!editable}
-      >
-        Update Record
-      </Button>
-      <Button type="default" onClick={() => setEditable(!editable)}>
-        {editable ? "Cancel Edit" : "Edit"}
-      </Button>
+          >
+            Update Record
+          </Button>
+          <Button type="default" onClick={() => setEditable(!editable)}>
+            {editable ? "Cancel Edit" : "Edit"}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };

@@ -10,6 +10,7 @@ import {
 import Graph from "./graph";
 import FineGraph from "./fineGraph";
 import Footer from "./footer";
+import { useNavigate } from "react-router-dom";
 
 const AnimatedCopyCard = ({ title, total, icon, onClick }) => {
   const cardProps = useSpring({
@@ -59,6 +60,7 @@ const Dashboard = () => {
   const [totalBooks, setTotalBooks] = useState(null);
   const [totalBookIssues, setTotalBookIssues] = useState(null);
   const [totalCopies, setTotalCopies] = useState(null);
+  const naviagte= useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,6 +81,8 @@ const Dashboard = () => {
   }, []);
 
   const navigateTo = (screen) => {
+    naviagte(`/${screen}`);
+
     // Add logic to navigate to the specified screen
     console.log(`Navigate to ${screen}`);
   };
@@ -102,16 +106,16 @@ const Dashboard = () => {
           title="Book Issues"
           total={totalBookIssues}
           icon={<ExclamationCircleOutlined />}
-          onClick={() => navigateTo("BookIssues")}
+          onClick={() => navigateTo("issuebookrecords")}
         />
         <AnimatedCopyCard
           title="Total Copies"
           total={totalCopies}
           icon={<CopyOutlined />}
-          onClick={() => navigateTo("TotalCopies")}
+          onClick={() => navigateTo("books")}
         />
       </div>
-      <div className="flex justify-center">
+      <div className="flex justify-center mb-3">
         <div className="flex justify-start mr-20">
           <Graph />
         </div>
