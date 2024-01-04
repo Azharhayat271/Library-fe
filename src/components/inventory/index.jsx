@@ -10,7 +10,9 @@ const BookReturnHistory = () => {
   useEffect(() => {
     const fetchReturnHistory = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/return/getallrecords");
+        const response = await axios.get(
+          "http://localhost:5000/return/getallrecords"
+        );
         setReturnHistory(response.data);
         setLoading(false);
       } catch (error) {
@@ -61,11 +63,15 @@ const BookReturnHistory = () => {
     },
     {
       title: "Payment Status",
-      dataIndex: "isPaid",
-      key: "isPaid",
-      render: (isPaid) => (
-        <span>{isPaid ? "Pending" : "paid"}</span>
-      ),
+      dataIndex: "status",
+      key: "status",
+      render: (status) => {
+        if (status.toLowerCase() === "true") {
+          return <span>Paid</span>;
+        } else {
+          return <span>Pending</span>;
+        }
+      },
     },
   ];
 

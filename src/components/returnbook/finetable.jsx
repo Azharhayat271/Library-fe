@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Space, Spin, Alert, Button } from "antd";
+import { Table, Space, Spin, Alert, Button , message } from "antd";
 import axios from "axios";
 
 const BookReturnHistory = () => {
@@ -27,8 +27,9 @@ const BookReturnHistory = () => {
     try {
       // Make the API request to update the payment status and reset fine-related fields
       await axios.post("http://localhost:5000/return/paynow", { id });
-      debugger;
       console.log(`Payment for record with id ${id} completed.`);
+      message.success("Payment Completed Successfully");
+      window.location.reload(); // Reload the page to fetch the updated return history data
 
       // Optionally, you can fetch the updated return history data after payment is completed
       // and update the component state if needed.

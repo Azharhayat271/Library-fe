@@ -1,66 +1,94 @@
-import React, { useState, useEffect } from "react";
-import { Card, Spin, Alert, Input, Button } from "antd";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import { Card, Input, Button, Spin, Typography } from 'antd';
 
-const PerDayFineComponent = () => {
-  const [perdayfine, setPerDayFine] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const { Text } = Typography;
+
+const FineCard = () => {
+  const [finePerDay, setFinePerDay] = useState(null);
+  const [fineID, setFineID] = useState('');
+  const [newFineValue, setNewFineValue] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log("fetch");
       try {
-        const response = await axios.get("http://localhost:5000/fine/get");
-        const { perdayfine } = response.data;
-        setPerDayFine(perdayfine);
+        const response = await fetch('http://localhost:5000/fine/get');
+        const data = await response.json();
+        setFinePerDay(data.finePerDay);
+        setFineID(data.id);
       } catch (error) {
-        setError("Error fetching data");
-      } finally {
-        setLoading(false);
+        console.error('Error fetching data:', error);
       }
     };
 
     fetchData();
   }, []);
 
-  const handleInputChange = (e) => {
-    setPerDayFine(e.target.value);
-  };
-
-  const handleUpdateClick = async () => {
-    console.log("update");
+  const handleUpdateFine = async () => {
     try {
-      // Make a PUT request to update the value in the database
-      await axios.put("http://localhost:5000/fine/update", { perdayfine });
+      setIsLoading(true);
+
+      // Make API request to update finePerDay
+      const response = await fetch('http://localhost:5000/fine/update', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ finePerDay: newFineValue, id: fineID }),
+      });
+
+      // Assume the API returns the updated data
+      const data = await response.json();
+      setFinePerDay(newFineValue);
+
+      // Reset the input and loading state
+      setNewFineValue('');
+      setIsLoading(false);
     } catch (error) {
-      setError("Error updating data");
+      console.error('Error updating finePerDay:', error);
+      setIsLoading(false);
     }
   };
 
-  if (loading) {
-    return <Spin tip="Loading..." />;
-  }
-
-  if (error) {
-    return <Alert message={error} type="error" />;
-  }
-
   return (
-    <Card title="Per Day Fine">
-      <Input
-        type="number"
-        value={perdayfine}
-        onChange={handleInputChange}
-        style={{ marginBottom: "10px" }}
-      />
-      <Button type="primary" onClick={handleUpdateClick}>
-        Update Value
-      </Button>
-      <p>Value: {perdayfine}</p>
+    <Card title="Fine Per Day">
+      {finePerDay !== null ? (
+        <>
+          <p>
+            <strong>
+              Value: <span style={{ fontSize: '1.5em' }}>{finePerDay}</span>
+            </strong>
+          </p>
+          <Input
+            placeholder="Update Fine Value"
+            value={newFineValue}
+            onChange={(e) => setNewFineValue(e.target.value)}
+          />
+          <div className='mt-3'>
+          <Button
+            type="primary"
+            onClick={handleUpdateFine}
+            loading={isLoading}
+            danger
+          >
+            {isLoading ? 'Updating...' : 'Update'}
+          </Button>
+          </div>
+
+          <div style={{ marginTop: '20px' }}>
+            <Text strong>Instructions:</Text>
+            <p>
+              The Fine Per Day value represents the amount charged for each day
+              a book is overdue. This value is used to calculate the fine when
+              a student submits a book return after the due date.
+            </p>
+          </div>
+        </>
+      ) : (
+        <Spin tip="Loading..." />
+      )}
     </Card>
   );
 };
 
-export default PerDayFineComponent;
-
+export default FineCard;

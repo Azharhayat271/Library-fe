@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Result, Space, Input, Button, Row, Col } from "antd";
+import { Result, Space, Input, Button, Row, Col, message } from "antd";
 import { RetweetOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
 
 const BookReturnDetails = () => {
   const { regNo } = useParams();
@@ -27,16 +26,37 @@ const BookReturnDetails = () => {
   }, []);
 
   // Function to calculate the total fine
+  // Function to calculate the total fine
+  // Function to calculate the total fine
   const totalFine = () => {
-    if (bookIssue && bookIssue.issueDate && bookIssue.returnDate) {
-      const date1 = new Date(bookIssue.issueDate);
-      const date2 = new Date(bookIssue.returnDate);
-      const diffTime = Math.abs(date2 - date1);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      const totalFine = diffDays * fine;
+    if (bookIssue && bookIssue.returnDate) {
+      const currentDate = new Date();
+      const returnDate = new Date(bookIssue.returnDate);
+
+      // Calculate the difference in days, excluding the return date
+      const daysLate =
+        Math.max(
+          0,
+          Math.ceil((currentDate - returnDate) / (1000 * 60 * 60 * 24))
+        ) - 1;
+
+
+
+      // If late days are 0 or less, return 0
+      if (daysLate <= 0) {
+        return 0;
+      }
+      console.log("daysLate", daysLate);
+
+      // Calculate fine per day
+      const finePerDay = fine;
+
+      // Calculate total fine
+      const totalFine = daysLate * finePerDay;
+
       return totalFine;
     } else {
-      return 0; // Handle the case where bookIssue or its properties are null
+      return 0; // Handle the case where bookIssue or its returnDate is null
     }
   };
 
@@ -62,11 +82,11 @@ const BookReturnDetails = () => {
 
   const handleReturnBook = async () => {
     const subfine = totalFine();
-    let status="pending";
+    let status = "pending";
     // if the total fine is zero then set the status to paid else set it to pending
     if (totalFineToBePaid === 0) {
       status = "true";
-    } else {  
+    } else {
       status = "false";
     }
 
@@ -92,8 +112,8 @@ const BookReturnDetails = () => {
       );
 
       console.log(response.data);
+      message.success("Book Returned Successfully");
       navigate("/returnbook");
-
 
       // You may want to perform additional actions after the book is returned successfully
     } catch (error) {

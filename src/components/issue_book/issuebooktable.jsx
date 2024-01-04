@@ -48,9 +48,6 @@ const BookIssueTable = () => {
     setSearchText("");
   };
 
-  const [editModalVisible, setEditModalVisible] = useState(false);
-  const [editedBookIssue, setEditedBookIssue] = useState(null);
-  const [updatedBookIssueData, setUpdatedBookIssueData] = useState({});
 
   const showDeleteConfirmation = (record) => {
     setDeleteConfirmationVisible(true);
@@ -124,7 +121,7 @@ const BookIssueTable = () => {
       align: "center",
       render: (text, record) => (
         <Space size="middle">
-          <Link to={`/bookissues/edit/${record.regNo}`}>
+          <Link to={`/issuebookrecords/edit/${record.regNo}`}>
             <EditOutlined />
           </Link>
         </Space>
@@ -185,25 +182,6 @@ const BookIssueTable = () => {
         loading={loading}
         rowKey="regNo"
       />
-      <Modal
-        title="Confirm Delete"
-        visible={deleteConfirmationVisible}
-        onOk={handleDelete}
-        onCancel={() => setDeleteConfirmationVisible(false)}
-        footer={[
-          <Button
-            key="cancel"
-            onClick={() => setDeleteConfirmationVisible(false)}
-          >
-            Cancel
-          </Button>,
-          <Button key="action" type="default" onClick={handleDelete}>
-            Delete
-          </Button>,
-        ]}
-      >
-        <p>Are you sure you want to delete this book issue?</p>
-      </Modal>
     </div>
   );
 };
